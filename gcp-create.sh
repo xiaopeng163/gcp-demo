@@ -1,11 +1,55 @@
+#!/bin/bash
+
+zones=("us-central1-a" "us-central1-b" "us-central1-c")
+# Set the target service name
+target_service="compute.googleapis.com"
+
+# Function to check if the service is enabled
+function is_service_enabled() {
+  # Use gcloud services list to check if the service is enabled
+  enabled_services=$(gcloud services list --format="value(NAME)" --filter="NAME:${target_service}")
+
+  # Check if the target service is in the list of enabled services
+  [[ $enabled_services == *"${target_service}"* ]]
+}
+
+
 # 创建project
-gcloud projects create project-a --name "ProjectA" --set-as-default
-gcloud config set project project-a
-gcloud services enable compute.googleapis.com
+# 生成随机字符串作为Project ID后缀
+project_id_suffix=$(cat /dev/urandom | tr -dc 'a-z0-9' | fold -w 8 | head -n 1)
+
+# 获取当前时间戳
+timestamp=$(date +%s)
+
+# 创建唯一的Project ID
+unique_project_id="project-${timestamp}-${project_id_suffix}"
+
+# 设置项目名称
+project_name="Project A"
+
+# 创建项目
+gcloud projects create ${unique_project_id} --name="${project_name}"
+
+# 配置gcloud使用新项目
+gcloud config set project ${unique_project_id}
+
+# Loop to periodically check if the service is enabled
+while true; do
+  if is_service_enabled; then
+    echo "Service ${target_service} is api服务已激活."
+    break
+  else
+    echo "Service ${target_service} is api服务还在激活中..."
+  fi
+
+  # Wait for 2 seconds before checking again
+  sleep 2
+done
 
 #创建6台虚拟机
 for i in {1..6}; do
-  zone="us-central1-$(echo abc | cut -c $((($i - 1) % 3 + 1)))"
+  index=$((($i - 1) % 3))
+  zone="${zones[index]}"
   gcloud compute instances create vm-instance-${i} \
     --zone=${zone} \
     --machine-type=e2-micro \
@@ -15,7 +59,8 @@ for i in {1..6}; do
     --tags=foo,bar
 done
 for i in {1..6}; do
-  zone="us-central1-$(echo abc | cut -c $((($i - 1) % 3 + 1)))"
+  index=$((($i - 1) % 3))
+  zone="${zones[index]}"
   vm_name="vm-instance-${i}"
 
   # 获取虚拟机的公共 IP 地址
@@ -34,13 +79,41 @@ gcloud compute firewall-rules create allow-http \
 
 
 # 创建project
-gcloud projects create project-b --name "ProjectB" --set-as-default
-gcloud config set project project-b
-gcloud services enable compute.googleapis.com
+# 生成随机字符串作为Project ID后缀
+project_id_suffix=$(cat /dev/urandom | tr -dc 'a-z0-9' | fold -w 8 | head -n 1)
+
+# 获取当前时间戳
+timestamp=$(date +%s)
+
+# 创建唯一的Project ID
+unique_project_id="project-${timestamp}-${project_id_suffix}"
+
+# 设置项目名称
+project_name="Project B"
+
+# 创建项目
+gcloud projects create ${unique_project_id} --name="${project_name}"
+
+# 配置gcloud使用新项目
+gcloud config set project ${unique_project_id}
+
+# Loop to periodically check if the service is enabled
+while true; do
+  if is_service_enabled; then
+    echo "Service ${target_service} is api服务已激活."
+    break
+  else
+    echo "Service ${target_service} is api服务还在激活中..."
+  fi
+
+  # Wait for 2 seconds before checking again
+  sleep 2
+done
 
 #创建6台虚拟机
 for i in {1..6}; do
-  zone="us-central1-$(echo abc | cut -c $((($i - 1) % 3 + 1)))"
+  index=$((($i - 1) % 3))
+  zone="${zones[index]}"
   gcloud compute instances create vm-instance-${i} \
     --zone=${zone} \
     --machine-type=e2-micro \
@@ -50,7 +123,8 @@ for i in {1..6}; do
     --tags=foo,bar
 done
 for i in {1..6}; do
-  zone="us-central1-$(echo abc | cut -c $((($i - 1) % 3 + 1)))"
+  index=$((($i - 1) % 3))
+  zone="${zones[index]}"
   vm_name="vm-instance-${i}"
 
   # 获取虚拟机的公共 IP 地址
