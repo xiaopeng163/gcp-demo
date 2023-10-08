@@ -11,3 +11,5 @@ alias mv='mv -i'
 
 # for git bash completion
 source /usr/share/bash-completion/completions/git
+
+export PATH=$PATH:/root/google-cloud-sdk/bin
