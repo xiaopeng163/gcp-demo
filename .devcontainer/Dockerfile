@@ -6,7 +6,8 @@ ENV WORKDIR="/tools" \
     YQ="v4.7.1" \
     OS_ARCH="${TARGETARCH:-amd64}" \
     TERRAFORM_VERSION="1.2.9" \
-    TFLINT_VERSION="v0.44.1"
+    TFLINT_VERSION="v0.44.1" \
+    GCLOUD_VERSION="421.0.0"
 
 ENV TZ  Asia/Shanghai
 
@@ -43,6 +44,12 @@ RUN curl \
     https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_${OS_ARCH}.zip \
     && unzip /tmp/terraform.zip -d /usr/local/bin \
     && rm -rf /tmp/terraform.zip
+
+# install gcloud
+RUN curl --location --output /tmp/gcloud.tar.gz https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-cli-421.0.0-linux-x86_64.tar.gz \
+    && tar zxvf /tmp/gcloud.tar.gz -C /root \
+    && rm -rf /tmp/gcloud.tar.gz
+
 
 COPY config/bashrc /root/.bashrc
 
