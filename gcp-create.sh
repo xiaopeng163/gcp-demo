@@ -1,6 +1,6 @@
 #!/bin/bash
 
-zones=("us-central1-a" "us-central1-b" "us-central1-c")
+zones=("us-central1-a" "us-west4-a" "us-south1-a", "us-west1-a")
 # Set the target service name
 target_service="compute.googleapis.com"
 
@@ -47,8 +47,8 @@ while true; do
 done
 
 #创建6台虚拟机
-for i in {1..6}; do
-  index=$((($i - 1) % 3))
+for i in {1..7}; do
+  index=$((($i - 1) % 4))
   zone="${zones[index]}"
   gcloud compute instances create vm-instance-${i} \
     --zone=${zone} \
@@ -58,8 +58,8 @@ for i in {1..6}; do
     --metadata=startup-script="$(cat start.sh)" \
     --tags=foo,bar
 done
-for i in {1..6}; do
-  index=$((($i - 1) % 3))
+for i in {1..7}; do
+  index=$((($i - 1) % 4))
   zone="${zones[index]}"
   vm_name="vm-instance-${i}"
 
@@ -111,8 +111,8 @@ while true; do
 done
 
 #创建6台虚拟机
-for i in {1..6}; do
-  index=$((($i - 1) % 3))
+for i in {1..7}; do
+  index=$((($i - 1) % 4))
   zone="${zones[index]}"
   gcloud compute instances create vm-instance-${i} \
     --zone=${zone} \
@@ -122,8 +122,8 @@ for i in {1..6}; do
     --metadata=startup-script="$(cat start.sh)" \
     --tags=foo,bar
 done
-for i in {1..6}; do
-  index=$((($i - 1) % 3))
+for i in {1..7}; do
+  index=$((($i - 1) % 4))
   zone="${zones[index]}"
   vm_name="vm-instance-${i}"
 
